@@ -5,22 +5,22 @@ module tb_wallace_tree_32bit();
     wire [63:0] result;
     reg [31:0] a;
     reg [31:0] b;
+    reg flag;
 
     wallaceTreeMultiplier32Bit DUT (result, a, b);
 
     initial begin
-        a = 32'h0101_0010;
-        b = 32'h0101_0014;
-        #10;
-        $display("A = %d B = %d Result: %d", a, b, result);
-        a = 32'h0101_0012;
-        b = 32'h0101_0066;
-        #10;
-        $display("A = %d B = %d Result: %d", a, b, result);
-        a = 32'h0000_0000;
-        b = 32'h0101_0010;
-        #10;
-        $display("A = %d B = %d Result: %d", a, b, result);
+        repeat (7) begin
+            a = $random;
+            b = $random;
+            #10;
+            $display("A = %d B = %d Result: %d", a, b, result);
+            if(result == a * b) begin
+                $display("Result match");
+            end else begin
+                $display("Result not match");
+            end
+        end
         $finish;
     end
     

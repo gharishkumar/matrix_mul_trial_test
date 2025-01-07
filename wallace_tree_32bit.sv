@@ -53,20 +53,22 @@ module wallaceTreeMultiplier32Bit (
         assign l15 = {8'b0, li15[15:0], 40'b0};
         assign l16 = {8'b0, li16[15:0], 48'b0};
 
-        adder_64 mc1(.a(l1), .b(l2), .sum(man1), .cout(w10));
-        adder_64 mc2(l3, l4, man2, w10);
-        adder_64 mc3(l5, l6, man3, w10);
-        adder_64 mc4(l7, l8, man4, w10);
-        adder_64 mc5(l9, l10, man5, w10);
-        adder_64 mc6(l11, l12, man6, w10);
-        adder_64 mc7(l13, l14, man7, w10);
-        adder_64 mc8(l15, l16, man8, w10);
-        adder_64 mc9(man1, man2, w1, w10);
-        adder_64 mc10(man3, man4, w2, w10);
-        adder_64 mc11(man5, man6, w3, w10);
-        adder_64 mc12(man7, man8, w4, w10);
-        adder_64 mc13(w1, w2, w5, w10);
-        adder_64 mc14(w3, w4, w6, w10);
-        adder_64 mc15(w5, w6, c, w10);
+        // adder_64 mc1(.a(l1), .b(l2), .sum(man1), .cout(w10));
+
+        assign {w10,man1} = l1 + l2;
+        assign {w10,man2} = l3 + l4;
+        assign {w10,man3} = l5 + l6;
+        assign {w10,man4} = l7 + l8;
+        assign {w10,man5} = l9 + l10;
+        assign {w10,man6} = l11 + l12;
+        assign {w10,man7} = l13 + l14;
+        assign {w10,man8} = l15 + l16;
+        assign {w10,w1}   = man1 + man2;
+        assign {w10,w2}   = man3 + man4;
+        assign {w10,w3}   = man5 + man6;
+        assign {w10,w4}   = man7 + man8;
+        assign {w10,w5}   = w1 + w2;
+        assign {w10,w6}   = w3 + w4;
+        assign {w10,c}    = w5 + w6;
 
 endmodule
