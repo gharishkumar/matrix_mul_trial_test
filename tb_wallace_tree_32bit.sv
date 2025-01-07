@@ -18,6 +18,8 @@ module tb_wallace_tree_32bit();
             if(result == a * b) begin
                 $display("Result match");
             end else begin
+                $display("expected");
+                $display("result = %d", a * b);
                 $display("Result not match");
             end
         end

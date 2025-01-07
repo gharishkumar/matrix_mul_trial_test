@@ -7,31 +7,27 @@ module test32x32;
 
   vedic32x32 V0(a, b, clk, result);
         
-        // Initialize values
   		initial begin
-        a = $random();
-        b = $random();
-        #300;
-        a = $random();
-        b = $random();
-        #300;
-        a = $random();
-        b = $random();
-        #300;
-        a = $random();
-        b = $random();
-        #100;
-        a = $random();
-        b = $random();
+        repeat (10) begin
+          @(posedge clk);
+          a = $random();
+          b = $random();
+          #300;          
+          $display("A = %d B = %d Result: %d", a, b, result);
+          if(result == a * b) begin
+              $display("Result match");
+          end else begin
+              $display("expected");
+              $display("result = %d", a * b);
+              $display("Result not match");
+          end
         end
+        $finish;
+      end
         
   
     initial begin
       clk = 1;
-    // Start the clock
-    forever #0.5 clk = ~clk;
-  end
-
-  // Add a delay to allow simulation to run
-  //initial #100 $finish; // Finish simulation
+      forever #0.5 clk = ~clk;
+    end
 endmodule
