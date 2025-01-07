@@ -1,10 +1,13 @@
 `timescale 1ns / 1ps
 
-module vedic32x32(a, b, clk, result);
+module vedic32x32(a, b, clk, result, valid_out);
     input  [31:0] a, b;
     input clk;
     output [63:0] result;
+    output valid_out;
+
     reg [63:0] op = 64'b0;
+    reg [63:0] pre_op = 64'b0;
 
     wire [31:0] t1, t2, t3, t6, t7;
     wire [35:0] t4, t5;
@@ -23,7 +26,9 @@ module vedic32x32(a, b, clk, result);
         op[15:0]  <= t1[15:0];
         op[31:16] <= t5[15:0];
         op[63:32] <= t7;
+        pre_op <= op;
     end
 
     assign result = op;
+    assign valid_out = (pre_op == op)?1'b1:1'b0;
 endmodule

@@ -3,9 +3,10 @@
 module test32x32;
     reg [31:0] a, b;
     wire [63:0] result;
+    wire valid_out;
     reg clk;
 
-  vedic32x32 V0(a, b, clk, result);
+  vedic32x32 V0(a, b, clk, result, valid_out);
         
   		initial begin
         repeat (10) begin
