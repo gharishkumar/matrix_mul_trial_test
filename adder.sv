@@ -1,3 +1,6 @@
+`timescale 1ns / 1ps
+
+
 module adder_64( a, b, sum, cout);
 input [63:0]a; 
 input [63:0]b;

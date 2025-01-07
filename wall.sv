@@ -1,3 +1,6 @@
+`timescale 1ns / 1ps
+
+
 module fulladder( a,b,cin, sum, carry );
     input a;
     input b;
@@ -35,6 +38,10 @@ module wallace(input [7:0] a1, b1, output [15:0] result
     );
 	 
 	 wire [7:0] p0,p1,p2,p3,p4,p5,p6,p7;
+//	 wire [9:0] a,b,cc,d;
+//	 wire [10:0] c,ec,fc;
+//	 wire [13:0] e;
+//	 wire [14:0] f;
 	 wire [7:0] r1, r2, r3, r4, r5, r6, r7, r8;
 	 wire [64:0] cr;
 	 wire [53:0] s;
@@ -60,40 +67,40 @@ module wallace(input [7:0] a1, b1, output [15:0] result
 	 assign p7=a1&r8;
 	
 	assign result[0] = p0[0];
-	assign {cr[1], s[1]}   = p0[1] + p1[0];
-	assign {cr[2], s[2]}   = p0[2] + p1[1] + p2[0];
-	assign {cr[3], s[3]}   = p0[3] + p1[2] + p2[1];
-	assign {cr[4], s[4]}   = p0[4] + p1[3] + p2[2];
-	assign {cr[10], s[10]} = p3[1] + p4[0];
-	assign {cr[5], s[5]}   = p0[5] + p1[4] + p2[3];
-	assign {cr[11], s[11]} = p3[2] + p4[1] + p5[0];
-	assign {cr[6], s[6]}   = p0[6] + p1[5] + p2[4];
-	assign {cr[12], s[12]} = p3[3] + p4[2] + p5[1];
-	assign {cr[7], s[7]}   = p0[7] + p1[6] + p2[5];
-	assign {cr[13], s[13]} = p3[4] + p4[3] + p5[2];
-	assign {cr[8], s[8]}   = p1[7] + p2[6];
-	assign {cr[14], s[14]} = p3[5] + p4[4] + p5[3];
-	assign {cr[9], s[9]}   = p2[7] + p3[6] + p4[5];
-	assign {cr[15], s[15]} = p3[7] + p4[6] + p5[5];
-	assign {cr[16], s[16]} = p4[7] + p5[6];
+	halfadder a1241(p0[1], p1[0], s[1], cr[1]);
+	fulladder a2(p0[2], p1[1], p2[0], s[2], cr[2]);
+	fulladder a3(p0[3], p1[2], p2[1], s[3], cr[3]);
+	fulladder a4(p0[4], p1[3], p2[2], s[4], cr[4]);	
+	halfadder a5(p3[1], p4[0], s[10], cr[10]);
+	fulladder a6(p0[5], p1[4], p2[3], s[5], cr[5]);
+	fulladder a7(p3[2], p4[1], p5[0], s[11], cr[11]);
+	fulladder a8(p0[6], p1[5], p2[4], s[6], cr[6]);
+	fulladder a9(p3[3], p4[2], p5[1], s[12], cr[12]);
+	fulladder a10(p0[7], p1[6], p2[5], s[7], cr[7]);
+	fulladder a11(p3[4], p4[3], p5[2], s[13], cr[13]);
+	halfadder a12(p1[7], p2[6], s[8], cr[8]);
+	fulladder a13(p3[5], p4[4], p5[3], s[14], cr[14]);
+	fulladder a14(p2[7], p3[6], p4[5], s[9], cr[9]);
+	fulladder a15(p3[7], p4[6], p5[5], s[15], cr[15]);
+	halfadder a16(p4[7], p5[6], s[16], cr[16]);	
 
 	assign result[1] = s[1];
-	assign {cr[17], s[17]} = s[2] + cr[1];
-	assign {cr[18], s[18]} = s[3] + cr[2] + p3[0];
-	assign {cr[19], s[19]} = s[4] + cr[3] + s[10];
-	assign {cr[20], s[20]} = s[5] + cr[4] + s[11];
-	assign {cr[21], s[21]} = s[6] + cr[5] + s[12];
-	assign {cr[22], s[22]} = s[7] + cr[6] + s[13];
-	assign {cr[23], s[23]} = s[8] + cr[7] + s[14];
-	assign {cr[24], s[24]} = s[9] + cr[8] + cr[14];
-	assign {cr[29], s[29]} = cr[9] + p6[4] + p7[3];
-	assign {cr[30], s[30]} = cr[15] + p6[5] + p7[4];
-	assign {cr[31], s[31]} = p5[7] + p6[6] + p7[5];
-	assign {cr[32], s[32]} = p6[7] + p7[6];
-	assign {cr[25], s[25]} = p6[0] + cr[11];
-	assign {cr[26], s[26]} = cr[12] + p6[1] + p7[0];
-	assign {cr[27], s[27]} = cr[13] + p6[2] + p7[1];
-	assign {cr[28], s[28]} = p5[4] + p6[3] + p7[2];
+	halfadder a17(s[2], cr[1], s[17], cr[17]);
+	fulladder a18(s[3], cr[2], p3[0], s[18], cr[18]);
+	fulladder a19(s[4], cr[3], s[10], s[19], cr[19]);		
+	fulladder a20(s[5], cr[4], s[11], s[20], cr[20]);
+	fulladder a21(s[6], cr[5], s[12], s[21], cr[21]);  	
+	fulladder a22(s[7], cr[6], s[13], s[22], cr[22]);
+	fulladder a23(s[8], cr[7], s[14], s[23], cr[23]);
+	fulladder a24(s[9], cr[8], cr[14], s[24], cr[24]);
+	fulladder a25(cr[9], p6[4], p7[3], s[29], cr[29]);		
+	fulladder a26(cr[15], p6[5], p7[4], s[30], cr[30]);
+	fulladder a27(p5[7], p6[6], p7[5], s[31], cr[31]);
+	halfadder a28(p6[7], p7[6], s[32], cr[32]);
+	halfadder a29(p6[0], cr[11], s[25], cr[25]);
+	fulladder a30(cr[12], p6[1], p7[0], s[26], cr[26]);
+	fulladder a31(cr[13], p6[2], p7[1], s[27], cr[27]);
+	fulladder a32(p5[4], p6[3], p7[2], s[28], cr[28]);
 
 	assign result[2] = s[17];
 	halfadder a33(s[18], cr[17], s[33], cr[33]);
