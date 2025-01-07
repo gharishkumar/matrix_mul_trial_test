@@ -13,11 +13,11 @@ module vedic32x32(a, b, clk, result);
     vedic16x16 M2(a[31:16], b[15:0], clk, t2);
     vedic16x16 M3(a[15:0], b[31:16], clk, t3);
 
-    adder34 A1({2'b00, t2}, {2'b00, t3}, clk, t4);
-    adder34 A2(t4, {20'b0, t1[31:16]}, clk, t5);
+    adder34 A1({2'b0, t2}, {2'b0, t3}, clk, t4[33:0]);
+    adder34 A2(t4[33:0], {18'b0, t1[31:16]}, clk, t5[33:0]);
 
     vedic16x16 M4(a[31:16], b[31:16], clk, t6);
-    adder32 A3(t6, {{15{1'b0}}, t5[33:16]}, clk, t7);
+    adder32 A3(t6, {{14'b0}, t5[33:16]}, clk, t7);
 
     always @(posedge clk) begin
         op[15:0]  <= t1[15:0];
