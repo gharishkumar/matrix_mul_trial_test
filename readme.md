@@ -1,24 +1,24 @@
-.
+.  
 ├── Design  
-│   └── matrix_multiplier  
-│       ├── unit_adder  
-│       │   └── unit_adder.sv  
-│       ├── unit_multiplier  
-│       │   └── unit_multiplier.sv  
-│       ├── IO_block  
-│       │   └── IO_block.sv  
-│       ├── PE_block  
-│       │   ├── FPU_normalizer  
-│       │   │   └── FPU_normalizer.sv  
-│       │   ├── Systolic_array_equ_unit  
-│       │   │   └── Systolic_array_equ_unit.sv  
-│       │   └── PE_block.sv  
-│       └── matrix_multiplier.sv  
-├── Sim
-│   ├── unit_verification  
-│   │   ├── UVM  
-│   │   └── SV_tb  
-│   └── top_verification  
-│       ├── UVM  
-│       └── SV_tb  
+│ &emsp;&emsp;└── matrix_multiplier  
+│&emsp;&emsp;       ├── unit_adder  
+│&emsp;&emsp;       │&emsp;&emsp;  └── unit_adder.sv  
+│&emsp;&emsp;       ├── unit_multiplier  
+│&emsp;&emsp;       │&emsp;&emsp;  └── unit_multiplier.sv  
+│&emsp;&emsp;       ├── IO_block  
+│&emsp;&emsp;       │&emsp;&emsp;  └── IO_block.sv  
+│&emsp;&emsp;       ├── PE_block  
+│&emsp;&emsp;       │&emsp;&emsp;   ├── FPU_normalizer  
+│&emsp;&emsp;       │&emsp;&emsp;   │&emsp;&emsp;  └── FPU_normalizer.sv  
+│&emsp;&emsp;       │&emsp;&emsp;   ├── Systolic_array_equ_unit  
+│&emsp;&emsp;       │&emsp;&emsp;   │&emsp;&emsp;   └── Systolic_array_equ_unit.sv  
+│&emsp;&emsp;       │&emsp;&emsp;   └── PE_block.sv  
+│&emsp;&emsp;       └── matrix_multiplier.sv  
+├── Sim  
+│&emsp;&emsp;   ├── unit_verification  
+│&emsp;&emsp;   │&emsp;&emsp;   ├── UVM  
+│&emsp;&emsp;   │&emsp;&emsp;   └── SV_tb  
+│&emsp;&emsp;   └── top_verification  
+│&emsp;&emsp;       ├── UVM  
+│&emsp;&emsp;       └── SV_tb  
 └── Synth  
