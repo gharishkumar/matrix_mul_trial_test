@@ -17,8 +17,8 @@
 │&emsp;&emsp;&emsp;&emsp;       └── matrix_multiplier.sv  
 ├── Sim  
 │&emsp;&emsp;   ├── unit_verification  
-│&emsp;&emsp;   │&emsp;&emsp;  └── functional_verificaion
-│&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; └── tb_unit_adder.v
+│&emsp;&emsp;   │&emsp;&emsp;  └── functional_verificaion  
+│&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; └── tb_unit_adder.v  
 │&emsp;&emsp;   │&emsp;&emsp;   ├── UVM  
 │&emsp;&emsp;   │&emsp;&emsp;   └── SV_tb  
 │&emsp;&emsp;   └── top_verification  
