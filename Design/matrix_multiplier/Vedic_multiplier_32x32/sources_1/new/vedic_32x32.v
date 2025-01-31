@@ -25,5 +25,5 @@ module vedic32x32(a, b, clk, result);
         op[63:32] <= t7;
     end
 
-    assign result = op; 
+    assign result = op;
 endmodule
