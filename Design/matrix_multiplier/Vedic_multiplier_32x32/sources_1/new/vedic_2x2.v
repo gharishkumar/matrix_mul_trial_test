@@ -17,11 +17,11 @@ module vedic_2x2(
     input wire m_tready
 );
 
-    
-    reg a_reg, b_reg;
+    reg [1:0] a_reg;
+    reg [1:0] b_reg;
     reg state;
     
-    reg m_result_tdata_reg;
+    reg [3:0] m_result_tdata_reg;
     reg s_a_tvalid_ha_1_reg, s_b_tvalid_ha_1_reg, s_b_tvalid_ha_2_reg;
 
     reg calc_done, a_done, b_done;
@@ -30,11 +30,11 @@ module vedic_2x2(
     wire [1:0] m_result_tdata_ha_1;
     wire [1:0] m_result_tdata_ha_2;
     
-    assign s_a_tdata_ha_1 = s_a_tdata[0] & s_b_tdata[1];
-    assign s_b_tdata_ha_1 = s_a_tdata[1] & s_b_tdata[0];
+    assign s_a_tdata_ha_1 = a_reg[0] & b_reg[1];
+    assign s_b_tdata_ha_1 = a_reg[1] & b_reg[0];
 
     assign s_a_tdata_ha_2 = m_result_tdata_ha_1[1];
-    assign s_b_tdata_ha_2 = s_a_tdata[1] & s_b_tdata[1];
+    assign s_b_tdata_ha_2 = a_reg[1] & b_reg[1];
 
 
     assign m_handshake = m_tvalid&m_tready;
@@ -91,11 +91,11 @@ module vedic_2x2(
                     if(s_a_handshake) begin
                             s_a_tready  <=  1'b0;
                             a_reg <= s_a_tdata;
-                            a_done <=1;
+                            a_done <= 1;
                     end 
                     else if (m_tvalid) begin
                             s_a_tready  <=  1'b1;
-                            a_done <=0;
+                            a_done <= 0;
                     end
             end 
         end
@@ -111,11 +111,11 @@ module vedic_2x2(
                     if(s_b_handshake) begin
                             s_b_tready  <=  1'b0;
                             b_reg <= s_b_tdata;
-                            b_done<=1;
+                            b_done <= 1;
                     end 
                     else if (m_tvalid) begin
                             s_b_tready  <=  1'b1;
-                            b_done <=0;
+                            b_done <= 0;
                     end
             end 
         end
@@ -143,7 +143,7 @@ module vedic_2x2(
                                if (m_tvalid_ha_2) begin
                                calc_done <= 1'b1;
                                state     <= CAPTURE_DATA;
-                               m_result_tdata_reg <= {m_result_tdata_ha_2, m_result_tdata_ha_1[0], (s_a_tdata[0]&s_b_tdata[0])};
+                               m_result_tdata_reg <= {m_result_tdata_ha_2, m_result_tdata_ha_1[0], (a_reg[0]&b_reg[0])};
                                end
                 end
                 default : state <= CAPTURE_DATA;
