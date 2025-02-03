@@ -3,7 +3,9 @@
 module vedic4x4(a, b, clk, result);
     input  [3:0] a, b;
     input clk;
-    output [7:0] result;
+    output reg [7:0] result;
+
+    wire [7:0] result_w;
 
     wire [3:0] t1, t2, t3, t6;
     wire [3:0] t1_buff_1, t1_buff_2;
@@ -21,9 +23,13 @@ module vedic4x4(a, b, clk, result);
     vedic_2x2 V4(a[3:2], b[3:2], clk, t6);
     buffer #(4)B2(clk, t6, t6_buff_1);
     buffer #(4)B3(clk, t6_buff_1, t6_buff_2);
-    adder4 A3(t6_buff_2, t5[5:2], clk, result [7:4]);
+    adder4 A3(t6_buff_2, t5[5:2], clk, result_w [7:4]);
     buffer #(4)B4(clk, t1_buff_1, t1_buff_2);
-    buffer #(2)B6(clk, t1_buff_2[1:0], result [1:0]);
+    buffer #(2)B6(clk, t1_buff_2[1:0], result_w [1:0]);
     
-    buffer #(2)B5(clk, t5[1:0], result [3:2]);
+    buffer #(2)B5(clk, t5[1:0], result_w [3:2]);
+
+    always @(posedge clk) begin 
+        result <= result_w;
+    end
 endmodule

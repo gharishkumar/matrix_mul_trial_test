@@ -1,16 +1,16 @@
 `timescale 1ns / 1ps
 
-module vedic32x32(a, b, clk, reset, result, valid_out);
+module vedic32x32(a, b, clk, reset_n, result, valid_out);
     input  [31:0] a, b;
     input clk;
-    input reset;
+    input reset_n;
     output [63:0] result;
-    output valid_out;
+    output reg valid_out;
     
     wire [31:0] t1, t2, t3, t6;
     wire [31:0] t1_buff_1, t1_buff_2;
     wire [31:0] t6_buff_1, t6_buff_2;
-    wire [35:0] t4, t5;
+    wire [33:0] t4, t5;
     reg [63:0] result_pre;
 
     vedic16x16 M1(a[15:0], b[15:0], clk, t1);
@@ -34,8 +34,16 @@ module vedic32x32(a, b, clk, reset, result, valid_out);
     buffer #(16)B5(clk, t5[15:0], result [31:16]);
     
     always @(posedge clk) begin
-        result_pre <= result;
+        if (!reset_n) begin
+            result_pre <= 0;
+            valid_out  <= 0;
+        end else begin 
+            result_pre <= result;
+            if (result == result_pre) begin
+                valid_out <= 1'b0;
+            end else begin
+                valid_out <= 1'b1;
+            end
+        end
     end
-
-    assign valid_out = (result == result_pre) ? 1'b0 : 1'b1;
 endmodule

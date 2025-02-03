@@ -7,5 +7,6 @@ module halfAdder(a, b, clk, sum, carry);
 	always @(posedge clk) begin
         	sum <= a ^ b;
     		carry <= a & b;
+            
     end
 endmodule

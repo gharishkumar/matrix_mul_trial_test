@@ -3,7 +3,9 @@
 module vedic8x8(a, b, clk, result);
     input  [7:0] a, b;
     input clk;
-    output [15:0] result;
+    output reg [15:0] result;
+
+    wire [15:0] result_w;
 
     wire [7:0] t1, t2, t3, t6;
     wire [7:0] t1_buff_1, t1_buff_2;
@@ -22,13 +24,16 @@ module vedic8x8(a, b, clk, result);
     
     buffer #(8)B2(clk, t6, t6_buff_1);
     buffer #(8)B3(clk, t6_buff_1, t6_buff_2);
-    adder8 A3(t6_buff_2, {2'b00, t5[9:4]}, clk, result[15:8]);
+    adder8 A3(t6_buff_2, {2'b00, t5[9:4]}, clk, result_w[15:8]);
     buffer #(8)B4(clk, t1_buff_1, t1_buff_2);
-    buffer #(4)B6(clk, t1_buff_2[3:0], result [3:0]);
+    buffer #(4)B6(clk, t1_buff_2[3:0], result_w [3:0]);
     
-    buffer #(4)B5(clk, t5[3:0], result [7:4]);
-endmodule
+    buffer #(4)B5(clk, t5[3:0], result_w [7:4]);
 
+    always @(posedge clk) begin 
+        result <= result_w;
+    end
+endmodule
 
 
 
