@@ -21,17 +21,18 @@ module pe #(parameter DATA_TYPE = 3'b011 )
     // output reg        done_pe
 );
     
-    vedic32x32 inst_vedic32x32 (.a(a), .b(b), .clk(clk), .reset(rst), .result(result), .valid_out(valid_out));
 
-    wire [31:0] a;
-    wire [31:0] b;
-    wire [63:0] result;
+wire [31:0] a;
+wire [31:0] b;
+wire [63:0] result;
 
-    reg [31:0] a_in_reg;
-    reg [31:0] b_in_reg;
+reg [31:0] a_in_reg;
+reg [31:0] b_in_reg;
 
-    assign a = a_in_reg;
-    assign b = b_in_reg;
+assign a = a_in_reg;
+assign b = b_in_reg;
+
+vedic32x32 inst_vedic32x32 (.a(a), .b(b), .clk(clk), .reset(rst), .result(result), .valid_out(valid_out));
 
     always @(posedge clk) begin 
         if(rst) begin

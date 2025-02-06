@@ -15,7 +15,7 @@ module test32x32;
           @(posedge clk);
           a = $random();
           b = $random();
-          #15;          
+          #230;          
           $display("A = %d B = %d Result: %d", a, b, result);
           if(result == a * b) begin
               $display("Result match");

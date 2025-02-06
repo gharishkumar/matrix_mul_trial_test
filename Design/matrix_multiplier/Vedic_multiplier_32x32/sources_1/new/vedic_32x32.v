@@ -1,9 +1,9 @@
 `timescale 1ns / 1ps
 
-module vedic32x32(a, b, clk, reset_n, result, valid_out);
+module vedic32x32(a, b, clk, reset, result, valid_out);
     input  [31:0] a, b;
     input clk;
-    input reset_n;
+    input reset;
     output [63:0] result;
     output reg valid_out;
     
@@ -34,7 +34,7 @@ module vedic32x32(a, b, clk, reset_n, result, valid_out);
     buffer #(16)B5(clk, t5[15:0], result [31:16]);
     
     always @(posedge clk) begin
-        if (!reset_n) begin
+        if (reset) begin
             result_pre <= 0;
             valid_out  <= 0;
         end else begin 
