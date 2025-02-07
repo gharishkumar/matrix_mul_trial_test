@@ -1,29 +1,40 @@
 
 module vedic2x2(
-    input clk,
-    input [1:0] a, b,
-    output reg [3:0] result
+    input wire       clk,
+    input wire       reset,
+    input wire [1:0] a, b,
+    input wire       do,
+    output reg [3:0] result,
+    output reg       done
 );
-  wire w0, w1, w2, w3, w4, w5;  
-  wire w2_buf_1; 
-  wire w5_buf_1; 
-  wire [3:0] result_w;
+    wire w0, w1, w2, w3, w4, w5;  
+    wire w2_buf_1; 
+    wire w5_buf_1; 
+    wire do_s2;
+    wire [3:0] result_w;
 
-  assign w0 = a[0] & b[1];
-  assign w1 = a[1] & b[0];
-  assign w2 = a[1] & b[1];
-  assign w5 = a[0] & b[0];
-  
-  adder #(1)H0(clk, w0, w1, {w3, w4});
-  buffer #(1)B0(clk, w4, result_w[1]);
-  buffer #(1)B1(clk, w2, w2_buf_1);
+    assign w0 = a[0] & b[1];
+    assign w1 = a[1] & b[0];
+    assign w2 = a[1] & b[1];
+    assign w5 = a[0] & b[0];
 
-  buffer #(1)B2(clk, w5, w5_buf_1);
-  buffer #(1)B3(clk, w5_buf_1, result_w[0]);
-  adder #(1)H1(clk, w2_buf_1, w3, result_w[3:2]);
-  
-  always @(posedge clk) begin 
-    result <= result_w;
-  end
+    buffer #(1)B2(clk, reset, w5,     do, w5_buf_1, done_s1_1);
+    adder  #(1)H0(clk, reset, w0, w1, do, {w3, w4}, done_s1_2);
+    buffer #(1)B1(clk, reset, w2,     do, w2_buf_1, done_s1_3);
+      
+    assign do_s2 = done_s1_1 & done_s1_2 & done_s1_3;
+
+    buffer #(1)B3(clk, reset, w5_buf_1,     do_s2, result_w[0],   done_s2_1);
+    buffer #(1)B0(clk, reset, w4,           do_s2, result_w[1],   done_s2_2);
+    adder  #(1)H1(clk, reset, w2_buf_1, w3, do_s2, result_w[3:2], done_s2_3);
+
+    always @(posedge clk) begin
+        if (reset) begin
+            done <= 1'b0;
+        end else begin
+          result <= result_w;
+          done <= done_s2_1 & done_s2_2 & done_s2_3;
+        end
+    end
   
 endmodule

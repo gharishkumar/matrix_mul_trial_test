@@ -1,0 +1,3 @@
+vlog -work work .\Design\matrix_multiplier\Vedic_multiplier_32x32\sources_1\new\buffer.v .\Design\matrix_multiplier\Vedic_multiplier_32x32\sources_1\new\adder.v .\Design\matrix_multiplier\Vedic_multiplier_32x32\sources_1\new\vedic_2x2.v .\Design\matrix_multiplier\Vedic_multiplier_32x32\sim_1\new\test2x2.v
+
+vsim -c -voptargs=+acc -sv_seed 432  work.test2x2 -do "add wave -position insertpoint sim:/test2x2/*;run -all"

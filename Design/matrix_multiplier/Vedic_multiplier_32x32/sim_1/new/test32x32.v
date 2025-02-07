@@ -1,32 +1,54 @@
 `timescale 1ns / 1ps
 
 module test32x32;
-    reg [31:0] a, b;
-    wire [63:0] result;
-    wire valid_out;
     reg clk;
     reg rst;
+    reg [31:0] a, b;
+    reg        do;
+    wire [63:0] result;
+    wire valid_out;
 
-  vedic32x32 V0(a, b, clk, rst, result, valid_out);
+  vedic32x32 V0(clk, rst, a, b, do, result, valid_out);
         
-  		initial begin
+  	initial begin
 
         repeat (10) begin
-          @(posedge clk);
-          a = $random();
-          b = $random();
-          #230;          
-          $display("A = %d B = %d Result: %d", a, b, result);
-          if(result == a * b) begin
-              $display("Result match");
-          end else begin
-              $display("expected");
-              $display("result = %d", a * b);
-              $display("Result not match");
-          end
+            @(posedge clk);
+            a = $random();
+            b = $random();
+            do = 1;
+            @(posedge clk);
+            do = 0;
+            #70;          
+            $display("A = %d B = %d Result: %d", a, b, result);
+            if(result == a * b) begin
+                $display("Result match");
+            end else begin
+                $display("expected");
+                $display("result = %d", a * b);
+                $display("Result not match");
+            end
+        end
+
+        repeat (5) begin
+            @(posedge clk);
+            // a = $random();
+            // b = $random();
+            do = 1;
+            @(posedge clk);
+            do = 0;
+            #230;          
+            $display("A = %d B = %d Result: %d", a, b, result);
+            if(result == a * b) begin
+                $display("Result match");
+            end else begin
+                $display("expected");
+                $display("result = %d", a * b);
+                $display("Result not match");
+            end
         end
         $finish;
-      end
+    end
         
   
     initial begin
