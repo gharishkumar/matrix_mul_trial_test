@@ -42,7 +42,8 @@ Directory structure:
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   ├── PE_int.sv  
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   ├── pe.v  
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   └── sys_arry.v  
-&emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       ├── Vedic_multiplier_32x32/   
+&emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       ├── Vedic_multiplier_32x32/  
+&emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   ├── run_sim.ps1  
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   ├── sim_1/  
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   │&emsp;&emsp;   └── new/  
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   │&emsp;&emsp;&emsp;&emsp;       ├── tb_bd.v  
@@ -68,8 +69,7 @@ Directory structure:
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   │&emsp;&emsp;&emsp;&emsp;       ├── vedic_32x32.v  
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   │&emsp;&emsp;&emsp;&emsp;       ├── vedic_4x4.v  
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   │&emsp;&emsp;&emsp;&emsp;       └── vedic_8x8.v  
-&emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   ├── ss/  
-&emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   └── run_sim.ps1  
+&emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       │&emsp;&emsp;   └── ss/  
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;       └── unit_adder/  
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;           ├── unit_adder.v.v  
 &emsp;&emsp;    │&emsp;&emsp;&emsp;&emsp;           └── updated_halfAdder_axis/  

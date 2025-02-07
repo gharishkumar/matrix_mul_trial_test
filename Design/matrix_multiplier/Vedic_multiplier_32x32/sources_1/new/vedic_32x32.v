@@ -1,31 +1,32 @@
 `timescale 1ns / 1ps
 
-module vedic32x32(a, b, clk, reset, result, valid_out);
-    input  [31:0] a, b;
-    input clk;
-    input reset;
-    output [63:0] result;
-    output reg valid_out;
-    
+module vedic32x32(
+    input  [31:0] a, b,
+    input clk,
+    input reset,
+    output [63:0] result,
+    output reg valid_out
+);
     wire [31:0] t1, t2, t3, t6;
     wire [31:0] t1_buff_1, t1_buff_2;
     wire [31:0] t6_buff_1, t6_buff_2;
-    wire [33:0] t4, t5;
-    reg [63:0] result_pre;
+    wire [34:0] t4, t5;
+    reg [64:0] result_pre;
+    wire       result_pad;
 
-    vedic16x16 M1(a[15:0], b[15:0], clk, t1);
-    vedic16x16 M2(a[31:16], b[15:0], clk, t2);
-    vedic16x16 M3(a[15:0], b[31:16], clk, t3);
+    vedic16x16 M1(clk, a[15:0], b[15:0], t1);
+    vedic16x16 M2(clk, a[31:16], b[15:0], t2);
+    vedic16x16 M3(clk, a[15:0], b[31:16], t3);
 
-    adder34 A1({2'b0, t2}, {2'b0, t3}, clk, t4[33:0]);    
+    adder #(34) A1(clk, {2'b0, t2}, {2'b0, t3}, t4);    
     buffer #(32)B1(clk, t1, t1_buff_1);
-    adder34 A2(t4[33:0], {18'b0, t1_buff_1[31:16]}, clk, t5[33:0]);
+    adder #(34) A2(clk, t4[33:0], {18'b0, t1_buff_1[31:16]}, t5);
 
-    vedic16x16 M4(a[31:16], b[31:16], clk, t6);
+    vedic16x16 M4(clk, a[31:16], b[31:16], t6);
     
     buffer #(32)B2(clk, t6, t6_buff_1);
     buffer #(32)B3(clk, t6_buff_1, t6_buff_2);
-    adder32 A3(t6_buff_2, {{14'b0}, t5[33:16]}, clk, result[63:32]);
+    adder #(32) A3(clk, t6_buff_2, {{14'b0}, t5[33:16]}, {result_pad, result[63:32]});
 
  
     buffer #(32)B4(clk, t1_buff_1, t1_buff_2);
