@@ -5,33 +5,33 @@ module fpu_multiplier(
         input_b,
         input_a_stb,
         input_b_stb,
-        output_z_ack,
+        input_z_ack,
         clk,
         rst,
         output_z,
         output_z_stb,
-        input_a_ack,
-        input_b_ack);
+        output_a_ack,
+        output_b_ack);
 
   input     clk;
   input     rst;
 
   input     [31:0] input_a;
   input     input_a_stb;
-  output    input_a_ack;
+  output    output_a_ack;
 
   input     [31:0] input_b;
   input     input_b_stb;
-  output    input_b_ack;
+  output    output_b_ack;
 
   output    [31:0] output_z;
   output    output_z_stb;
-  input     output_z_ack;
+  input     input_z_ack;
 
   reg       s_output_z_stb;
   reg       [31:0] s_output_z;
-  reg       s_input_a_ack;
-  reg       s_input_b_ack;
+  reg       s_output_a_ack;
+  reg       s_output_b_ack;
 
   reg       [3:0] state;
   parameter get_a         = 4'd0,
@@ -56,51 +56,37 @@ module fpu_multiplier(
   reg       [47:0] product;
   wire      [63:0] vedic_mul_product;
   
-  wire      [31:0] a_m_padded, b_m_padded;
-  assign a_m_padded = {8'b0, a_m}; // Pad a_m to 32 bits
-  assign b_m_padded = {8'b0, b_m}; // Pad b_m to 32 bits
+  // assign vedic_mul_product = {48{1'b0}};
 
   reg start, done, vedic_mul_start;
   wire valid_out;
+  
+  wire [31:0] a_m_padded;
+  wire [31:0] b_m_padded;
+  assign a_m_padded = {8'b0,a_m};
+  assign b_m_padded = {8'b0,b_m};
 
-  vedic_32x32 inst_vedic_32x32
+    vedic32x32 inst_vedic32x32 
     (
-      .a         (a_m_padded),
-      .b         (b_m_padded),
-      .clk       (clk),
-      .reset     (rst),
-      .start     (vedic_mul_start),
-      .result    (vedic_mul_product),
-      .valid_out (valid_out)
+      .clk(clk), 
+      .reset(reset), 
+      .a(a_m_padded), 
+      .b(b_m_padded), 
+      .do(vedic_mul_start), 
+      .result(vedic_mul_product), 
+      .done(valid_out)
     );
+
 
 
   always @(posedge clk)
   begin
     if (rst) begin
-      state           <= get_a;
-      s_input_a_ack   <= 0;
-      s_input_b_ack   <= 0;
-      s_output_z_stb  <= 0;
-      product         <= 0;
-      start           <= 0;
-      done            <= 0;
-      vedic_mul_start <= 0;
-      // a               <= 0;
-      // b               <= 0;
-      // z               <= 0;
-      // a_m             <= 0;
-      // b_m             <= 0;
-      // z_m             <= 0;
-      // a_e             <= 0;
-      // b_e             <= 0;
-      // z_e             <= 0;
-      // a_s             <= 0;
-      // b_s             <= 0;
-      // z_s             <= 0;
-      // guard           <= 0;
-      // round_bit       <= 0;
-      // sticky          <= 0;
+      state <= get_a;
+      s_output_a_ack <= 0;
+      s_output_b_ack <= 0;
+      s_output_z_stb <= 0;
+      product <= 0;
     end else begin
     case(state)
 
@@ -108,20 +94,20 @@ module fpu_multiplier(
       begin
         start <= 1'b1;
         done  <= 1'b0;
-        s_input_a_ack <= 1;
-        if (s_input_a_ack && input_a_stb) begin
+        s_output_a_ack <= 1;
+        if (s_output_a_ack && input_a_stb) begin
           a <= input_a;
-          s_input_a_ack <= 0;
+          s_output_a_ack <= 0;
           state <= get_b;
         end
       end
 
       get_b:
       begin
-        s_input_b_ack <= 1;
-        if (s_input_b_ack && input_b_stb) begin
+        s_output_b_ack <= 1;
+        if (s_output_b_ack && input_b_stb) begin
           b <= input_b;
-          s_input_b_ack <= 0;
+          s_output_b_ack <= 0;
           state <= unpack;
         end
       end
@@ -227,7 +213,7 @@ module fpu_multiplier(
         z_e <= a_e + b_e + 1;
         vedic_mul_start <= 1'b1;
         if (valid_out) begin
-          product <= vedic_mul_product[47:0];;
+          product <= vedic_mul_product[47:0];
           state <= multiply_1;
           vedic_mul_start <= 1'b0;
         end
@@ -300,7 +286,7 @@ module fpu_multiplier(
       begin
         s_output_z_stb <= 1;
         s_output_z <= z;
-        if (s_output_z_stb && output_z_ack) begin
+        if (/*s_output_z_stb && input_z_ack*/s_output_z == z) begin
           s_output_z_stb <= 0;
           state <= get_a;
           done  <= 1'b1;
@@ -313,8 +299,8 @@ module fpu_multiplier(
 
   end
   
-  assign input_a_ack = s_input_a_ack;
-  assign input_b_ack = s_input_b_ack;
+  assign output_a_ack = s_output_a_ack;
+  assign output_b_ack = s_output_b_ack;
   assign output_z_stb = s_output_z_stb;
   assign output_z = s_output_z;
 
