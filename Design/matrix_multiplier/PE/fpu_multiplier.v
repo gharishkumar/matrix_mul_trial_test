@@ -3,6 +3,7 @@
 module fpu_multiplier(
         input_a,
         input_b,
+        start,
         input_a_stb,
         input_b_stb,
         clk,
@@ -12,6 +13,8 @@ module fpu_multiplier(
 
   input     clk;
   input     rst;
+
+  input     start;
 
   input     [31:0] input_a;
   input     input_a_stb;
@@ -26,19 +29,20 @@ module fpu_multiplier(
   reg       [31:0] s_output_z;
 
   reg       [3:0] state;
-  parameter get_a         = 4'd0,
-            get_b         = 4'd1,
-            unpack        = 4'd2,
-            special_cases = 4'd3,
-            normalise_a   = 4'd4,
-            normalise_b   = 4'd5,
-            multiply_0    = 4'd6,
-            multiply_1    = 4'd7,
-            normalise_1   = 4'd8,
-            normalise_2   = 4'd9,
-            round         = 4'd10,
-            pack          = 4'd11,
-            put_z         = 4'd12;
+  parameter idle          = 4'd0,
+            get_a         = 4'd1,
+            get_b         = 4'd2,
+            unpack        = 4'd3,
+            special_cases = 4'd4,
+            normalise_a   = 4'd5,
+            normalise_b   = 4'd6,
+            multiply_0    = 4'd7,
+            multiply_1    = 4'd8,
+            normalise_1   = 4'd9,
+            normalise_2   = 4'd10,
+            round         = 4'd11,
+            pack          = 4'd12,
+            put_z         = 4'd13;
 
   reg       [31:0] a, b, z;
   reg       [23:0] a_m, b_m, z_m;
@@ -50,7 +54,7 @@ module fpu_multiplier(
   
   // assign vedic_mul_product = {48{1'b0}};
 
-  reg start, done;
+  reg done;
   reg vedic_mul_start;
   wire valid_out;
   
@@ -75,15 +79,23 @@ module fpu_multiplier(
   always @(posedge clk)
   begin
     if (rst) begin
-      state <= get_a;
+      state <= idle;
       s_output_z_stb <= 0;
       product <= 0;
     end else begin
     case(state)
 
+      idle : 
+      begin
+        if (start) begin
+          state <= get_a;
+        end else begin
+          state <= idle;
+        end
+      end
+
       get_a:
       begin
-        start <= 1'b1;
         done  <= 1'b0;
         if (input_a_stb ) begin
           a <= input_a;
@@ -280,9 +292,8 @@ module fpu_multiplier(
         s_output_z <= z;
         // if (s_output_z == z) begin
         //   s_output_z_stb <= 0;
-          state <= get_a;
+          state <= idle;
           done  <= 1'b1;
-          start <= 1'b0;
         // end
       end
 

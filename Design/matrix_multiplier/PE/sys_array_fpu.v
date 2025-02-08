@@ -11,12 +11,17 @@ module sys_array_fpu (
 );
 
     // Internal wires for PE communication
-    wire [31:0] pe00_row_out, pe00_col_out;
+    wire [31:0] pe00_row_out;
+    wire [31:0] pe00_col_out;
     wire [31:0] pe01_row_out, pe01_col_out;
     wire [31:0] pe10_row_out, pe10_col_out;
     wire [31:0] pe11_row_out, pe11_col_out;
 
     wire [31:0] pe00_result, pe01_result, pe10_result, pe11_result;
+
+    reg done00, done01, done10, done11;
+
+    wire all_done;
 
     // Instantiate PE for (0,0)
     pe_fpu pe00 (
@@ -77,25 +82,91 @@ module sys_array_fpu (
     assign result_row10 = pe10_result;
     assign result_row11 = pe11_result;
 
-    // reg [2:0] count; 
+    // assign done = all_done;
+
+    assign all_done = done00 & done01 & done10 & done11;
 
     // always @(posedge clk) begin 
     //     if(rst) begin
-    //         count <= 0;
-    //         done  <= 0;
+    //         done <= 0;
     //     end else begin
-    //         if (pe00_done || pe01_done || pe10_done || pe11_done) begin
-    //             count <= count + 1;
-    //             done  <= 0;
-    //         end else if (count == 3'b100) begin
-    //             done  <= 1'b1;
-    //             count <= 3'b000;
+    //         if ((done00 == 1'b1) && (done01 == 1'b1) && (done10 == 1'b1) && (done11 == 1'b0)) begin
+    //             done <= 1'b1;
     //         end else begin
-    //             done  <= 0;
-    //             count <= count;
+    //             done <= 1'b0;
     //         end
     //     end
     // end
+
+    always @(posedge clk) begin 
+        if(rst) begin
+            done <= 0;
+        end else begin
+            if (all_done) begin
+                done <= 1'b1;
+            end else begin
+                done <= 1'b0;
+            end
+        end
+    end
+
+    always @(posedge clk) begin 
+        if(rst) begin
+            done00 <= 0;
+        end else begin
+            if (pe00_done) begin
+                done00 <= 1'b1;
+            end else if (done) begin
+                done00 = 1'b0;
+            end else begin
+                done00 <= done00;
+            end
+        end
+    end
+
+       always @(posedge clk) begin 
+        if(rst) begin
+            done01 <= 0;
+        end else begin
+            if (pe10_done) begin
+                done01 <= 1'b1;
+            end else if (done) begin
+                done01 = 1'b0;
+            end else begin
+                done01 <= done01;
+            end
+        end
+    end
+
+
+       always @(posedge clk) begin 
+        if(rst) begin
+            done10 <= 0;
+        end else begin
+            if (pe10_done) begin
+                done10 <= 1'b1;
+            end else if (done) begin
+                done10 = 1'b0;
+            end else begin
+                done10 <= done10;
+            end
+        end
+    end
+
+
+       always @(posedge clk) begin 
+        if(rst) begin
+            done11 <= 0;
+        end else begin
+            if (pe11_done) begin
+                done11 <= 1'b1;
+            end else if (done) begin
+                done11 = 1'b0;
+            end else begin
+                done11 <= done11;
+            end
+        end
+    end
 
    
 
