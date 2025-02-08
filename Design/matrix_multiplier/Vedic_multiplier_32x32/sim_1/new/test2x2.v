@@ -4,11 +4,11 @@ module test2x2;
     reg clk;
     reg rst;
     reg [1:0] a, b;
-    reg do;
+    reg start;
     wire [3:0] result;
     wire done;
 
-  vedic2x2 DUT (clk, rst, a, b, do, result, done);
+  vedic2x2 DUT (clk, rst, a, b, start, result, done);
         
   		initial begin
 
@@ -16,9 +16,9 @@ module test2x2;
           @(posedge clk);
           a = $random();
           b = $random();
-          do = 1;
+          start = 1;
           @(posedge clk);
-          do = 0;
+          start = 0;
           #230;          
           $display("A = %d B = %d Result: %d", a, b, result);
           if(result == a * b) begin

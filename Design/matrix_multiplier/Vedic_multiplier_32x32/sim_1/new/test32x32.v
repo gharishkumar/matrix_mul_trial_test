@@ -2,13 +2,13 @@
 
 module test32x32;
     reg clk;
-    reg rst;
+    reg reset;
     reg [31:0] a, b;
-    reg        do;
+    reg        start;
     wire [63:0] result;
     wire valid_out;
 
-  vedic32x32 V0(clk, rst, a, b, do, result, valid_out);
+  vedic32x32 V0(clk, reset, a, b, start, result, valid_out);
   
     initial begin
         clk = 1;
@@ -16,22 +16,22 @@ module test32x32;
     end
 
     initial begin
-        rst = 1;
-        #10 rst = ~rst;
+        reset = 1;
+        #10 reset = ~reset;
     end
         
   	initial begin
         a = 32'd0;
         b = 32'd0;
-        do = 0;
+        start = 0;
         wait(reset == 1'b0);
         repeat (10) begin
             @(posedge clk);
             a = $random();
             b = $random();
-            do = 1;
+            start = 1;
             @(posedge clk);
-            do = 0;
+            start = 0;
             wait(valid_out);          
             $display("A = %d B = %d Result: %d", a, b, result);
             if(result == a * b) begin
@@ -47,9 +47,9 @@ module test32x32;
             @(posedge clk);
             // a = $random();
             // b = $random();
-            do = 1;
+            start = 1;
             @(posedge clk);
-            do = 0;
+            start = 0;
             wait(valid_out);   
             $display("A = %d B = %d Result: %d", a, b, result);
             if(result == a * b) begin
@@ -65,9 +65,9 @@ module test32x32;
             @(posedge clk);
             a = 32'hFFFFFFFF;
             b = 32'hFFFFFFFF;
-            do = 1;
+            start = 1;
             @(posedge clk);
-            do = 0;
+            start = 0;
             wait(valid_out);         
             $display("A = %d B = %d Result: %d", a, b, result);
             if(result == a * b) begin

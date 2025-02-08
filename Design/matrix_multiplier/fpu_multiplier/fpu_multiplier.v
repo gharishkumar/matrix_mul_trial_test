@@ -72,7 +72,7 @@ module fpu_multiplier(
       .reset(reset), 
       .a(a_m_padded), 
       .b(b_m_padded), 
-      .do(vedic_mul_start), 
+      .start(vedic_mul_start), 
       .result(vedic_mul_product), 
       .done(valid_out)
     );

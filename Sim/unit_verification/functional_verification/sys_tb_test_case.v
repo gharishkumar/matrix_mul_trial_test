@@ -6,8 +6,8 @@ module systolic_2x2_tb;
     reg clk;
     reg rst;
     reg load_in;
-    reg [31:0] mat1_row0, mat1_row1;
-    reg [31:0] mat2_col0, mat2_col1;
+    reg [31:0] row_in_row0, row_in_row1;
+    reg [31:0] col_in_col0, col_in_col1;
     
     // Outputs
     wire [63:0] result_row00, result_row01, result_row10, result_row11;
@@ -24,10 +24,10 @@ module systolic_2x2_tb;
         .clk(clk),
         .rst(rst),
         .load_in(load_in),
-        .mat1_row0(mat1_row0),
-        .mat1_row1(mat1_row1),
-        .mat2_col0(mat2_col0),
-        .mat2_col1(mat2_col1),
+        .row_in_row0(row_in_row0),
+        .row_in_row1(row_in_row1),
+        .col_in_col0(col_in_col0),
+        .col_in_col1(col_in_col1),
         .result_row00(result_row00),
         .result_row01(result_row01),
         .result_row10(result_row10),
@@ -35,14 +35,14 @@ module systolic_2x2_tb;
         .carry_00(carry_00),
         .carry_01(carry_01),
         .carry_10(carry_10),
-        .carry_11(carry_11)
-        // .done(done)
+        .carry_11(carry_11),
+        .done(done)
     );
 
     // Clock generation
     initial begin
         clk = 0;
-        forever #5 clk = ~clk; // 10ns period clock
+        forever #10 clk = ~clk; // 10ns period clock
     end
 
     // Test sequence
@@ -66,10 +66,10 @@ module systolic_2x2_tb;
         
         rst = 1;
         load_in = 0;
-        mat1_row0 = 0;
-        mat1_row1 = 0;
-        mat2_col0 = 0;
-        mat2_col1 = 0;
+        row_in_row0 = 0;
+        row_in_row1 = 0;
+        col_in_col0 = 0;
+        col_in_col1 = 0;
 
         // Apply reset
         #190;
@@ -78,11 +78,11 @@ module systolic_2x2_tb;
         // Load first set of data
         #200;
         load_in = 1;
-        mat1_row0 = a11; 
-        mat1_row1 = 32'h0; 
+        row_in_row0 = a12; 
+        row_in_row1 = 32'h0; 
 
-        mat2_col0 = b11; 
-        mat2_col1 = 32'h0; 
+        col_in_col0 = b21; 
+        col_in_col1 = 32'h0; 
  
         #20 load_in = 0;
 
@@ -92,11 +92,11 @@ module systolic_2x2_tb;
 
         // 2nd set of data
         load_in = 1;
-        mat1_row0 = a21; 
-        mat1_row1 = a12; 
+        row_in_row0 = a11; 
+        row_in_row1 = a22; 
 
-        mat2_col0 = b12; 
-        mat2_col1 = b21; 
+        col_in_col0 = b11; 
+        col_in_col1 = b22; 
 
         #20 load_in = 0;
 
@@ -105,11 +105,11 @@ module systolic_2x2_tb;
 
         #300;
         load_in = 1;
-        mat1_row0 = 32'h0; 
-        mat1_row1 = a22; 
+        row_in_row0 = 32'h0; 
+        row_in_row1 = a21; 
 
-        mat2_col0 = 32'h0; 
-        mat2_col1 = b22; 
+        col_in_col0 = 32'h0; 
+        col_in_col1 = b12; 
 
         #20 load_in = 0;
 
@@ -118,11 +118,11 @@ module systolic_2x2_tb;
 
         #300;
         load_in = 1;
-        mat1_row0 = 32'h0; 
-        mat1_row1 = 32'h0; 
+        row_in_row0 = 32'h0; 
+        row_in_row1 = 32'h0; 
 
-        mat2_col0 = 32'h0; 
-        mat2_col1 = 32'h0; 
+        col_in_col0 = 32'h0; 
+        col_in_col1 = 32'h0; 
 
         #20 load_in = 0;
 
@@ -134,8 +134,8 @@ module systolic_2x2_tb;
         
 
         // End simulation
-        #200;
-        if(((a11*b11 + a12*b21) == result_row00 )&&( (a11*b12 + a12*b22) == result_row10 )&&( (a21*b11 + a22*b21) == result_row01)&&( (a21*b12 + a22*b22) == result_row11)) begin
+        #2000;
+        if(((a11*b11 + a12*b21) == result_row00 )&&( (a11*b12 + a12*b22) == result_row01 )&&( (a21*b11 + a22*b21) == result_row10)&&( (a21*b12 + a22*b22) == result_row11)) begin
             $display("Test passed");
         end else begin
             $display("Test failed");

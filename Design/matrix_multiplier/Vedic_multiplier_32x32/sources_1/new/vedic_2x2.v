@@ -3,7 +3,7 @@ module vedic2x2(
     input wire       clk,
     input wire       reset,
     input wire [1:0] a, b,
-    input wire       do,
+    input wire       start,
     output reg [3:0] result,
     output reg       done
 );
@@ -18,14 +18,14 @@ module vedic2x2(
     assign w2 = a[1] & b[1];
     assign w5 = a[0] & b[0];
 
-    buffer #(1)B2(clk, reset, w5,     do, w5_buf_1, done_s1_1);
-    adder  #(1)H0(clk, reset, w0, w1, do, {w3, w4}, done_s1_2);
-    buffer #(1)B1(clk, reset, w2,     do, w2_buf_1, done_s1_3);
+    PIPO #(1)B2(clk, reset, w5,     start, w5_buf_1, done_s1_1);
+    adder  #(1)H0(clk, reset, w0, w1, start, {w3, w4}, done_s1_2);
+    PIPO #(1)B1(clk, reset, w2,     start, w2_buf_1, done_s1_3);
       
     assign do_s2 = done_s1_1 & done_s1_2 & done_s1_3;
 
-    buffer #(1)B3(clk, reset, w5_buf_1,     do_s2, result_w[0],   done_s2_1);
-    buffer #(1)B0(clk, reset, w4,           do_s2, result_w[1],   done_s2_2);
+    PIPO #(1)B3(clk, reset, w5_buf_1,     do_s2, result_w[0],   done_s2_1);
+    PIPO #(1)B0(clk, reset, w4,           do_s2, result_w[1],   done_s2_2);
     adder  #(1)H1(clk, reset, w2_buf_1, w3, do_s2, result_w[3:2], done_s2_3);
 
     always @(posedge clk) begin
