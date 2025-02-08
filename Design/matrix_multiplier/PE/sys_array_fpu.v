@@ -7,7 +7,8 @@ module sys_array_fpu (
     input [31:0] row_in_row0, row_in_row1, // Matrix A inputs (2 rows)
     input [31:0] col_in_col0, col_in_col1, // Matrix B inputs (2 columns)
     output [31:0] result_row00, result_row01, result_row10, result_row11,// Output matrix C (2 rows)
-    output reg done
+    output reg done,
+    output reg valid_op
 );
 
     // Internal wires for PE communication
@@ -164,6 +165,26 @@ module sys_array_fpu (
                 done11 = 1'b0;
             end else begin
                 done11 <= done11;
+            end
+        end
+    end
+
+      reg [2:0] count;
+
+    always @(posedge clk) begin 
+        if(rst) begin
+            count <= 0;
+            valid_op  <= 0;
+        end else begin
+            if (pe11_done) begin
+                count <= count + 1;
+                valid_op  <= 0;
+            end else if (count == 3'b100) begin
+                valid_op  <= 1'b1;
+                count <= 3'b000;
+            end else begin
+                valid_op  <= 0;
+                count <= count;
             end
         end
     end
