@@ -8,6 +8,10 @@ module systolic_2x2_tb;
     reg load_in;
     reg [31:0] row_in_row0, row_in_row1;
     reg [31:0] col_in_col0, col_in_col1;
+    reg [31:0] a11, a12;
+    reg [31:0] a21, a22;
+    reg [31:0] b11, b12;
+    reg [31:0] b21, b22;
 
     // Outputs
     wire [63:0] result_row00, result_row01, result_row10, result_row11;
@@ -42,6 +46,12 @@ module systolic_2x2_tb;
 
     // Test sequence
     initial begin
+        a11=32'd1;         a12=32'd2;
+        a21=32'd3;         a22=32'd4;
+        
+        b11=32'd1;         b12=32'd2;
+        b21=32'd3;         b22=32'd4;
+        
         // Initialize inputs
         rst = 1;
         load_in = 0;
@@ -57,10 +67,10 @@ module systolic_2x2_tb;
         // Load first set of data
         #100;
         load_in = 1;
-        row_in_row0 = 32'd2; //
+        row_in_row0 = a12; //
         row_in_row1 = 32'h0; 
 
-        col_in_col0 = 32'h2; 
+        col_in_col0 = b21; 
         col_in_col1 = 32'h0; 
  
         #10 load_in = 0;
@@ -71,11 +81,11 @@ module systolic_2x2_tb;
 
         // 2nd set of data
         load_in = 1;
-        row_in_row0 = 32'h2; 
-        row_in_row1 = 32'h2; 
+        row_in_row0 = a11; 
+        row_in_row1 = a22; 
 
-        col_in_col0 = 32'h2; 
-        col_in_col1 = 32'h2; 
+        col_in_col0 = b11; 
+        col_in_col1 = b22; 
 
         #10 load_in = 0;
 
@@ -85,10 +95,10 @@ module systolic_2x2_tb;
         #200;
         load_in = 1;
         row_in_row0 = 32'h0; 
-        row_in_row1 = 32'h2; 
+        row_in_row1 = a21; 
 
         col_in_col0 = 32'h0; 
-        col_in_col1 = 32'h2; 
+        col_in_col1 = b12; 
 
         #10 load_in = 0;
 
