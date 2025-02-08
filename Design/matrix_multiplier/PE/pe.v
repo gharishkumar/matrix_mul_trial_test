@@ -21,14 +21,14 @@ module pe #(parameter DATA_TYPE = 3'b011 )
     output reg        done_pe
 );
     
-wire [31:0] a;
-wire [31:0] b;
-wire [63:0] result;
+    vedic32x32 inst_vedic32x32 (.clk(clk), .reset(rst), .a(a), .b(b), .do(do_mul), .result(result), .done(done));
 
-wire do_mul;
-reg do_mul_reg;
-    vedic32x32 inst_vedic32x32 (.clk(clk), .reset(rst), .a(a), .b(b), .start(do_mul), .result(result), .done(done));
+    wire [31:0] a;
+    wire [31:0] b;
+    wire [63:0] result;
 
+    wire do_mul;
+    reg do_mul_reg;
 
     assign do_mul = do_mul_reg;
 
