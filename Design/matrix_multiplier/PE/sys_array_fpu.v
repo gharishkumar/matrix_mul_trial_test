@@ -87,23 +87,11 @@ module sys_array_fpu (
 
     assign all_done = done00 & done01 & done10 & done11;
 
-    // always @(posedge clk) begin 
-    //     if(rst) begin
-    //         done <= 0;
-    //     end else begin
-    //         if ((done00 == 1'b1) && (done01 == 1'b1) && (done10 == 1'b1) && (done11 == 1'b0)) begin
-    //             done <= 1'b1;
-    //         end else begin
-    //             done <= 1'b0;
-    //         end
-    //     end
-    // end
-
     always @(posedge clk) begin 
         if(rst) begin
             done <= 0;
         end else begin
-            if (all_done) begin
+            if (all_done & !done) begin
                 done <= 1'b1;
             end else begin
                 done <= 1'b0;
