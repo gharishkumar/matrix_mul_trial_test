@@ -33,18 +33,18 @@ module fpu_adder(
   reg       s_input_b_ack;
 
   reg       [3:0] state;
-  parameter get_a         = 4'd0,
-            get_b         = 4'd1,
-            unpack        = 4'd2,
-            special_cases = 4'd3,
-            align         = 4'd4,
-            add_0         = 4'd5,
-            add_1         = 4'd6,
-            normalise_1   = 4'd7,
-            normalise_2   = 4'd8,
-            round         = 4'd9,
-            pack          = 4'd10,
-            put_z         = 4'd11;
+  parameter get_a_input          = 4'd0,
+            get_b_input          = 4'd1,
+            unpack_input         = 4'd2,
+            handle_special_cases = 4'd3,
+            align_number         = 4'd4,
+            add_step_1           = 4'd5,
+            add_step_2           = 4'd6,
+            normalise_step_1     = 4'd7,
+            normalise_step_2     = 4'd8,
+            round_off            = 4'd9,
+            pack_output          = 4'd10,
+            put_z_output         = 4'd11;
 
   reg       [31:0] a, b, z;
   reg       [26:0] a_m, b_m;
@@ -59,27 +59,27 @@ module fpu_adder(
 
     case(state)
 
-      get_a:
+      get_a_input:
       begin
         s_input_a_ack <= 1;
         if (s_input_a_ack && input_a_stb) begin
           a <= input_a;
           s_input_a_ack <= 0;
-          state <= get_b;
+          state <= get_b_input;
         end
       end
 
-      get_b:
+      get_b_input:
       begin
         s_input_b_ack <= 1;
         if (s_input_b_ack && input_b_stb) begin
           b <= input_b;
           s_input_b_ack <= 0;
-          state <= unpack;
+          state <= unpack_input;
         end
       end
 
-      unpack:
+      unpack_input:
       begin
         a_m <= {a[22 : 0], 3'd0};
         b_m <= {b[22 : 0], 3'd0};
@@ -87,10 +87,10 @@ module fpu_adder(
         b_e <= b[30 : 23] - 127;
         a_s <= a[31];
         b_s <= b[31];
-        state <= special_cases;
+        state <= handle_special_cases;
       end
 
-      special_cases:
+      handle_special_cases:
       begin
         //if a is NaN or b is NaN return NaN 
         if ((a_e == 128 && a_m != 0) || (b_e == 128 && b_m != 0)) begin
@@ -98,7 +98,7 @@ module fpu_adder(
           z[30:23] <= 255;
           z[22] <= 1;
           z[21:0] <= 0;
-          state <= put_z;
+          state <= put_z_output;
         //if a is inf return inf
         end else if (a_e == 128) begin
           z[31] <= a_s;
@@ -111,32 +111,32 @@ module fpu_adder(
               z[22] <= 1;
               z[21:0] <= 0;
           end
-          state <= put_z;
+          state <= put_z_output;
         //if b is inf return inf
         end else if (b_e == 128) begin
           z[31] <= b_s;
           z[30:23] <= 255;
           z[22:0] <= 0;
-          state <= put_z;
+          state <= put_z_output;
         //if a is zero return b
         end else if ((($signed(a_e) == -127) && (a_m == 0)) && (($signed(b_e) == -127) && (b_m == 0))) begin
           // z[31] <= a_s & b_s;
           // z[30:23] <= b_e[7:0] + 127;
           // z[22:0] <= b_m[26:3];
           z[31:0] <= 0;
-          state <= put_z;
+          state <= put_z_output;
         //if a is zero return b
         end else if (($signed(a_e) == -127) && (a_m == 0)) begin
           z[31] <= b_s;
           z[30:23] <= b_e[7:0] + 127;
           z[22:0] <= b_m[26:3];
-          state <= put_z;
+          state <= put_z_output;
         //if b is zero return a
         end else if (($signed(b_e) == -127) && (b_m == 0)) begin
           z[31] <= a_s;
           z[30:23] <= a_e[7:0] + 127;
           z[22:0] <= a_m[26:3];
-          state <= put_z;
+          state <= put_z_output;
         end else begin
           //Denormalised Number
           if ($signed(a_e) == -127) begin
@@ -150,11 +150,11 @@ module fpu_adder(
           end else begin
             b_m[26] <= 1;
           end
-          state <= align;
+          state <= align_number;
         end
       end
 
-      align:
+      align_number:
       begin
         if ($signed(a_e) > $signed(b_e)) begin
           b_e <= b_e + 1;
@@ -165,11 +165,11 @@ module fpu_adder(
           a_m <= a_m >> 1;
           a_m[0] <= a_m[0] | a_m[1];
         end else begin
-          state <= add_0;
+          state <= add_step_1;
         end
       end
 
-      add_0:
+      add_step_1:
       begin
         z_e <= a_e;
         if (a_s == b_s) begin
@@ -184,10 +184,10 @@ module fpu_adder(
             z_s <= b_s;
           end
         end
-        state <= add_1;
+        state <= add_step_2;
       end
 
-      add_1:
+      add_step_2:
       begin
         if (sum[27]) begin
           z_m <= sum[27:4];
@@ -201,10 +201,10 @@ module fpu_adder(
           round_bit <= sum[1];
           sticky <= sum[0];
         end
-        state <= normalise_1;
+        state <= normalise_step_1;
       end
 
-      normalise_1:
+      normalise_step_1:
       begin
         if (z_m[23] == 0 && $signed(z_e) > -126) begin
           z_e <= z_e - 1;
@@ -213,11 +213,11 @@ module fpu_adder(
           guard <= round_bit;
           round_bit <= 0;
         end else begin
-          state <= normalise_2;
+          state <= normalise_step_2;
         end
       end
 
-      normalise_2:
+      normalise_step_2:
       begin
         if ($signed(z_e) < -126) begin
           z_e <= z_e + 1;
@@ -226,11 +226,11 @@ module fpu_adder(
           round_bit <= guard;
           sticky <= sticky | round_bit;
         end else begin
-          state <= round;
+          state <= round_off;
         end
       end
 
-      round:
+      round_off:
       begin
         if (guard && (round_bit | sticky | z_m[0])) begin
           z_m <= z_m + 1;
@@ -238,10 +238,10 @@ module fpu_adder(
             z_e <=z_e + 1;
           end
         end
-        state <= pack;
+        state <= pack_output;
       end
 
-      pack:
+      pack_output:
       begin
         z[22 : 0] <= z_m[22:0];
         z[30 : 23] <= z_e[7:0] + 127;
@@ -258,23 +258,23 @@ module fpu_adder(
           z[30 : 23] <= 255;
           z[31] <= z_s;
         end
-        state <= put_z;
+        state <= put_z_output;
       end
 
-      put_z:
+      put_z_output:
       begin
         s_output_z_stb <= 1;
         s_output_z <= z;
         if (s_output_z_stb) begin
           s_output_z_stb <= 0;
-          state <= get_a;
+          state <= get_a_input;
         end
       end
 
     endcase
 
     if (rst == 1) begin
-      state <= get_a;
+      state <= get_a_input;
       s_input_a_ack <= 0;
       s_input_b_ack <= 0;
       s_output_z_stb <= 0;

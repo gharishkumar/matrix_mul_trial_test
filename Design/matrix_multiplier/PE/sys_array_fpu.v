@@ -1,14 +1,14 @@
 `timescale 1ns/1ps
 
 module sys_array_fpu (
-    input clk,
-    input rst,
-    input load_in,
+    input clk,                             // clk
+    input rst,                             // synchronous active high reset
+    input load_in,                         // load_in to load new inputs
     input [31:0] row_in_row0, row_in_row1, // Matrix A inputs (2 rows)
     input [31:0] col_in_col0, col_in_col1, // Matrix B inputs (2 columns)
     output [31:0] result_row00, result_row01, result_row10, result_row11,// Output matrix C (2 rows)
-    output reg done,
-    output reg valid_op
+    output reg done,                       // to denote PE done
+    output reg valid_op                    // valid 
 );
 
     // Internal wires for PE communication
