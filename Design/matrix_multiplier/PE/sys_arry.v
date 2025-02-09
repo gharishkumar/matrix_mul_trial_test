@@ -8,7 +8,8 @@ module systolic_2x2 #(parameter DATA_TYPE = 3'b011) (
     input [31:0] col_in_col0, col_in_col1, // Matrix B inputs (2 columns)
     output [63:0] result_row00, result_row01, result_row10, result_row11,// Output matrix C (2 rows)
     output carry_00, carry_01, carry_10, carry_11,
-    output reg done
+    output reg done,
+    output reg valid_op
 );
 
     // Internal wires for PE communication
@@ -80,25 +81,122 @@ module systolic_2x2 #(parameter DATA_TYPE = 3'b011) (
     assign {carry_10, result_row10} = pe10_result;
     assign {carry_11, result_row11} = pe11_result;
 
-    reg [2:0] count;
+    // reg [2:0] count;
+
+    // always @(posedge clk) begin 
+    //     if(rst) begin
+    //         count <= 0;
+    //         done  <= 0;
+    //     end else begin
+    //         if (pe00_done || pe01_done || pe10_done || pe11_done) begin
+    //             count <= count + 1;
+    //             done  <= 0;
+    //         end else if (count == 3'b100) begin
+    //             done  <= 1'b1;
+    //             count <= 3'b000;
+    //         end else begin
+    //             done  <= 0;
+    //             count <= count;
+    //         end
+    //     end
+    // end
+
+    reg done00, done01, done10, done11;
+
+    assign all_done = done00 & done01 & done10 & done11;
+
+    always @(posedge clk) begin 
+        if(rst) begin
+            done <= 0;
+        end else begin
+            if (all_done & !done) begin
+                done <= 1'b1;
+            end else begin
+                done <= 1'b0;
+            end
+        end
+    end
+
+    always @(posedge clk) begin 
+        if(rst) begin
+            done00 <= 0;
+        end else begin
+            if (pe00_done) begin
+                done00 <= 1'b1;
+            end else if (done) begin
+                done00 = 1'b0;
+            end else begin
+                done00 <= done00;
+            end
+        end
+    end
+
+       always @(posedge clk) begin 
+        if(rst) begin
+            done01 <= 0;
+        end else begin
+            if (pe10_done) begin
+                done01 <= 1'b1;
+            end else if (done) begin
+                done01 = 1'b0;
+            end else begin
+                done01 <= done01;
+            end
+        end
+    end
+
+
+       always @(posedge clk) begin 
+        if(rst) begin
+            done10 <= 0;
+        end else begin
+            if (pe10_done) begin
+                done10 <= 1'b1;
+            end else if (done) begin
+                done10 = 1'b0;
+            end else begin
+                done10 <= done10;
+            end
+        end
+    end
+
+
+       always @(posedge clk) begin 
+        if(rst) begin
+            done11 <= 0;
+        end else begin
+            if (pe11_done) begin
+                done11 <= 1'b1;
+            end else if (done) begin
+                done11 = 1'b0;
+            end else begin
+                done11 <= done11;
+            end
+        end
+    end
+
+      reg [2:0] count;
 
     always @(posedge clk) begin 
         if(rst) begin
             count <= 0;
-            done  <= 0;
+            valid_op  <= 0;
         end else begin
-            if (pe00_done || pe01_done || pe10_done || pe11_done) begin
+            if (pe11_done) begin
                 count <= count + 1;
-                done  <= 0;
+                valid_op  <= 0;
             end else if (count == 3'b100) begin
-                done  <= 1'b1;
+                valid_op  <= 1'b1;
                 count <= 3'b000;
             end else begin
-                done  <= 0;
+                valid_op  <= 0;
                 count <= count;
             end
         end
     end
+
+
+   
 
    
 
